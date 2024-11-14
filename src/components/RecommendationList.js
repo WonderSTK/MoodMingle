@@ -1,57 +1,78 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Grid, Typography, CircularProgress } from '@mui/material';
+import { motion } from 'framer-motion';
 import RecommendationItem from './RecommendationItem';
 
 function RecommendationList() {
   const { movies, books, songs, status, error } = useSelector((state) => state.recommendations);
 
   if (status === 'loading') {
-    return <div>Loading...</div>;
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}
+      >
+        <CircularProgress size={60} thickness={4} />
+      </motion.div>
+    );
   }
 
   if (status === 'failed') {
-    return <div>Error: {error}</div>;
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Typography variant="h6" color="error" align="center">
+          Error: {error}
+        </Typography>
+      </motion.div>
+    );
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div>
-        <h2 className="text-xl font-bold mb-2">Movies</h2>
-        {movies.map((movie, index) => (
-          <RecommendationItem
-            key={index}
-            title={movie.title}
-            subtitle={movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}
-            imageUrl={movie.poster_path ? `https://image.tmdb.org/t/p/w200${movie.poster_path}` : 'https://via.placeholder.com/200x300'}
-            type="movie"
-          />
-        ))}
-      </div>
-      <div>
-        <h2 className="text-xl font-bold mb-2">Books</h2>
-        {books.map((book, index) => (
-          <RecommendationItem
-            key={index}
-            title={book.title}
-            subtitle={book.authors.join(', ')}
-            imageUrl={book.coverUrl || 'https://via.placeholder.com/200x300'}
-            type="book"
-          />
-        ))}
-      </div>
-      <div>
-        <h2 className="text-xl font-bold mb-2">Songs</h2>
-        {songs.map((song, index) => (
-          <RecommendationItem
-            key={index}
-            title={song.name || song.title}
-            subtitle={song.artist}
-            imageUrl={song.image?.[2]['#text'] || 'https://via.placeholder.com/200x200'}
-            type="song"
-          />
-        ))}
-      </div>
-    </div>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      <Grid container spacing={4}>
+        <RecommendationSection title="Movies" items={movies} />
+        <RecommendationSection title="Books" items={books} />
+        <RecommendationSection title="Songs" items={songs} />
+      </Grid>
+    </motion.div>
+  );
+}
+
+function RecommendationSection({ title, items }) {
+  return (
+    <Grid item xs={12} md={4}>
+      <Typography variant="h5" gutterBottom sx={{ color: 'white', fontWeight: 'bold' }}>
+        {title}
+      </Typography>
+      {items.map((item, index) => (
+        <RecommendationItem
+          key={index}
+          item={item}
+          type={title.toLowerCase().slice(0, -1)}
+        />
+      ))}
+    </Grid>
   );
 }
 

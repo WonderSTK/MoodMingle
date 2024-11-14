@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { TextField, Button, Box } from '@mui/material';
+import { motion } from 'framer-motion';
 import { fetchRecommendations } from '../redux/recommendationsSlice';
 
 function MoodInput() {
@@ -14,18 +16,44 @@ function MoodInput() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4">
-      <input
-        type="text"
-        value={mood}
-        onChange={(e) => setMood(e.target.value)}
-        placeholder="Enter your mood..."
-        className="p-2 border rounded mr-2"
-      />
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Get Recommendations
-      </button>
-    </form>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.3, duration: 0.5 }}
+    >
+      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', gap: 2, mb: 4 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          value={mood}
+          onChange={(e) => setMood(e.target.value)}
+          placeholder="Enter your mood..."
+          sx={{ 
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            borderRadius: 1,
+            '& .MuiOutlinedInput-root': {
+              '&:hover fieldset': {
+                borderColor: 'white',
+              },
+            },
+          }}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="secondary"
+          sx={{ 
+            px: 4,
+            backgroundColor: '#f50057',
+            '&:hover': {
+              backgroundColor: '#ff4081',
+            },
+          }}
+        >
+          Get Recommendations
+        </Button>
+      </Box>
+    </motion.div>
   );
 }
 
